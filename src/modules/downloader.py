@@ -6,7 +6,7 @@ import json
 from PIL import Image
 from src.config import SERVER_MAP
 
-def download_and_prepare_assets(prefix: str, id_part: str) -> str:
+def download_and_prepare_assets(prefix: str, id_part: str, dist_dir: str) -> str:
     """
     指定サーバーから譜面データをダウンロードし、ジャケットをリサイズする。
     成功した場合、完全な譜面IDを返す。
@@ -23,7 +23,6 @@ def download_and_prepare_assets(prefix: str, id_part: str) -> str:
     response.raise_for_status()
     api_response_data = response.json()
 
-    dist_dir = os.path.join("dist", full_level_id)
     os.makedirs(dist_dir, exist_ok=True)
     
     with open(os.path.join(dist_dir, "level.json"), 'w', encoding='utf-8') as f:

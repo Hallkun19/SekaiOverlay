@@ -5,13 +5,11 @@ import json
 from src.utils import resource_path
 
 
-def generate_alias_object(level_id: str, last_note_time: float, extra_data: dict) -> str: # ★ base_dir引数を削除
+def generate_alias_object(level_id: str, dist_dir: str, last_note_time: float, extra_data: dict) -> str: # ★ base_dir引数を削除
     print("エイリアスオブジェクトの生成を開始します...")
     
     # ★ プロジェクトルートを基準にパスを再構築
-    project_root = resource_path('.')
-    dist_dir = os.path.join(project_root, 'dist', level_id)
-    assets_dir = os.path.join(project_root, 'assets')
+    assets_dir = resource_path('assets')
     
     try:
         # ★ template_pathをresource_pathで取得

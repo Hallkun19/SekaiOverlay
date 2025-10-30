@@ -157,14 +157,13 @@ def _render_v1(target_image: Image.Image) -> Image.Image:
     return final_image
 
 
-def generate_background_image(level_id: str, version: str) -> None:
+def generate_background_image(level_id: str, version: str, dist_dir: str) -> None:
     """
     背景画像とカバー画像を合成して新しい画像を生成します。
     """
     print("背景画像の生成を開始します...")
 
     # パス設定
-    dist_dir = os.path.join("dist", level_id)
     cover_image_path = os.path.join(dist_dir, "jacket.jpg")
     output_image_path = os.path.join(dist_dir, "background.png")
 

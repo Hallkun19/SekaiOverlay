@@ -2,7 +2,7 @@ from src.config import WEIGHT_MAP
 import json
 import os
 from typing import List, Dict, Any, Tuple
-
+from src.utils import resource_path
 
 class BpmChange:
     def __init__(self, beat: float, bpm: float):
@@ -136,11 +136,10 @@ def _calculate_score_frames(level_info: Dict[str, Any], level_data: Dict[str, An
         
     return frames, last_note_time
 
-def generate_skobj_data(level_id: str, assets_base_path: str, team_power: float, app_version: str) -> float:
+def generate_skobj_data(level_id: str, dist_dir: str, team_power: float, app_version: str) -> float:
     """
     譜面データを読み込み、スコアオブジェクトデータを計算してJSONファイルに出力する。
     """
-    dist_dir = os.path.join("dist", level_id)
     level_info_path = os.path.join(dist_dir, "level.json")
     chart_path = os.path.join(dist_dir, "chart.json")
     
@@ -157,9 +156,10 @@ def generate_skobj_data(level_id: str, assets_base_path: str, team_power: float,
     print("スコアオブジェクトデータの生成を開始します...")
     
     score_frames, last_note_time = _calculate_score_frames(level_info, level_data, team_power)
+    assets_full_path = os.path.abspath(resource_path('assets')).replace(os.sep, '\\')
 
     output_data = {
-        "asset_path": assets_base_path + "\\",
+        "asset_path": assets_full_path + "\\",
         "version": app_version,
         "objects": score_frames
     }
