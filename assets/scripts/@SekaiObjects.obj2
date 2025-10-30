@@ -1,0 +1,264 @@
+-- SekaiObjects by halkun19 -------------------------------------
+
+@InitSettings
+--file:skobj data
+--track0:offset,-10000,10000,0,1
+--check:ignore cache,0
+
+JSON = require("dkjson")
+SKOBJ_VERSION = "v0.1.0"
+SKOBJ_DATA = {}
+CURRENT_SKOBJ_DATA = {}
+IGNORE_CACHE = obj.check
+
+-- SKOBJ_DATA parse
+if not SKOBJ_JSON or IGNORE_CACHE then
+    debug_print("[SekaiObjects] loading skobj data file in ".. file)
+    SKOBJ_JSON = JSON.decode(io.open(file):read("*a"))
+
+    LOAD_STATUS = "ok"
+    if not SKOBJ_JSON then
+        LOAD_STATUS = "not_found"
+    end
+    if SKOBJ_JSON.version ~= SKOBJ_VERSION then
+        LOAD_STATUS = "version_mismatch"
+    end
+
+    if LOAD_STATUS == "ok" then
+        ASSET_PATH = tostring(SKOBJ_JSON.asset_path)
+        debug_print("[SekaiObjects] Successfully loaded skobj data")
+        debug_print("[SekaiObjects] Version: " .. SKOBJ_JSON.version)
+    elseif LOAD_STATUS == "not_found" then
+        debug_print("[SekaiObjects] Couldn't find skobj data file")
+        obj.setfont("メイリオ", 32)
+        obj.load("Couldn't find skobj data file")
+    elseif LOAD_STATUS == "version_mismatch" then
+        debug_print("[SekaiObjects] Version mismatch")
+        debug_print("[SekaiObjects] .obj2: " .. SKOBJ_VERSION)
+        debug_print("[SekaiObjects] skobj data file: " .. SKOBJ_JSON.version)
+        obj.setfont("メイリオ", 32)
+        obj.load("Version mismatch\n.obj2: " .. SKOBJ_VERSION .. " skobj data file: " .. SKOBJ_JSON.version)
+    end
+    obj.draw()
+
+end
+
+if LOAD_STATUS == "ok" then
+    OFFSET = obj.track0
+    for i = #SKOBJ_JSON.objects, 1, -1 do
+        local temp = SKOBJ_JSON.objects[i]
+        CURRENT_SKOBJ_DATA = {
+            seconds = 0,
+            combo = 0,
+            score = 0,
+            add_score = 0,
+            rank = "none",
+            score_bar = 0,
+        }
+        if (temp.seconds * obj.framerate) < (obj.frame - OFFSET) then
+            CURRENT_SKOBJ_DATA = temp
+            break
+        end
+    end
+end
+-----------------------------------------------------------------
+
+@Combo
+--track0:AP,0,1,1,1
+--track1:X Area Expand,1,10000,1000,1
+
+local ap = obj.track0
+local x_area_expand = obj.track1
+if LOAD_STATUS == "ok" and SKOBJ_JSON then
+    if CURRENT_SKOBJ_DATA.combo > 0 then
+        local progress = (obj.frame - OFFSET) - (CURRENT_SKOBJ_DATA.seconds * obj.framerate)
+        local ofs = (#tostring(CURRENT_SKOBJ_DATA.combo) - 1) * -51
+        local aura_alpha = (math.sin(obj.time * 4) + 1) * (1 / 2)
+        obj.setoption("drawtarget", "tempbuffer", 500 + x_area_expand, 300)
+        obj.setoption("blend", 0)
+
+        if ap == 1 then
+            obj.load("image", ASSET_PATH .. "combo/v3/bc.png")
+            obj.draw(0, -103, 0, 1, aura_alpha)
+            obj.load("image", ASSET_PATH .. "combo/v3/pc.png")
+        else
+            obj.load("image", ASSET_PATH .. "combo/v3/nc.png")
+        end
+        obj.draw(0, -100)
+
+        local size = 0
+        if progress > 8 then
+            size = 1
+        else
+            size = (progress / 8) * 0.4 + 0.6
+        end
+
+        local digit = 0
+
+        for i = 1, #tostring(CURRENT_SKOBJ_DATA.combo) do
+            digit = string.sub(tostring(CURRENT_SKOBJ_DATA.combo), i, i)
+            obj.setoption("blend", 0)
+
+            if ap == 1 then
+                obj.load("image", ASSET_PATH .. "combo/v3/b" .. digit .. ".png")
+                obj.draw((ofs + (i - 1) * 102) * size, 0, 0, size, aura_alpha)
+                obj.load("image", ASSET_PATH .. "combo/v3/p" .. digit .. ".png")
+            else
+                obj.load("image", ASSET_PATH .. "combo/v3/n" .. digit .. ".png")
+            end
+
+            obj.draw((ofs + (i - 1) * 102) * size, 0, 0, size)
+            if progress > 8 and progress < 15 then
+                local add_size = ((progress - 8) / 7) * 0.4
+                obj.setoption("blend", 1)
+                obj.effect("ぼかし", "範囲", ((progress - 8) / 7) * 8)
+                obj.draw((ofs + (i - 1) * 102) * (size + add_size), 0, 0, size + add_size, 1 - (((progress - 8) / 7) * 0.5 + 0.5))
+            end
+        end
+        obj.setoption("blend", 0)
+        obj.copybuffer("obj", "tmp")
+    end
+end
+
+-----------------------------------------------------------------
+
+@Score
+--track0:Max Digit,1,100,8,1
+--track1:Animation Speed,1,10,4,1
+--track2:X Area Expand,1,10000,0,1
+
+local max_digit = obj.track0
+local anim_speed = obj.track1
+local x_area_expand = obj.track2
+if LOAD_STATUS == "ok" and SKOBJ_JSON then
+    local progress = (obj.frame - OFFSET) - (CURRENT_SKOBJ_DATA.seconds * obj.framerate)
+
+    obj.setoption("drawtarget", "tempbuffer", 663 + x_area_expand, 200)
+
+    obj.load("image", ASSET_PATH .. "score/v3/bg.png")
+    obj.draw(0, 0, 0, 0.32)
+    
+    obj.load("image", ASSET_PATH .. "score/v3/bar.png")
+    obj.effect("マスク", "X", CURRENT_SKOBJ_DATA.score_bar * 1650, "サイズ", 1650, "マスクの種類", "四角形", "マスクの反転", 1)
+    obj.draw(51.4, -4.51, 0, 0.32)
+
+    obj.load("image", ASSET_PATH .. "score/v3/fg.png")
+    obj.draw(-1, 0, 0, 0.32)
+
+    local score_str = tostring(CURRENT_SKOBJ_DATA.score)
+    local len = #score_str
+    if len < max_digit then
+        score_str = string.rep("n", max_digit - len) .. score_str
+    end
+
+    for i = 1, max_digit do
+        local digit = string.sub(score_str, i, i)
+        obj.load("image", ASSET_PATH .. "score/v3/digit/s" .. digit .. ".png")
+        obj.draw(-188.83 + (i - 1) * 32.5, 40.38, 0, 1)
+    end
+
+    for i = 1, max_digit do
+        local digit = string.sub(score_str, i, i)
+        obj.load("image", ASSET_PATH .. "score/v3/digit/" .. digit .. ".png")
+        obj.draw(-188.83 + (i - 1) * 32.5, 40.38, 0, 1)
+    end
+
+    local max_digit_ofs = -188.83 + (max_digit - 1) * 32.5
+
+    obj.load("image", ASSET_PATH .. "score/v3/rank/character/" .. CURRENT_SKOBJ_DATA.rank .. ".png")
+    obj.draw(-280.99, -10.81, 0, 0.35)
+
+    obj.load("image", ASSET_PATH .. "score/v3/rank/text/" .. CURRENT_SKOBJ_DATA.rank .. ".png")
+    obj.draw(-281.66, 52.02, 0, 0.085)
+
+    local ofs_x = 0
+
+    if progress < 20 then
+        ofs_x = (1 - math.pow(1 - (progress / 20), anim_speed)) * 45
+    else
+        ofs_x = 45
+    end
+
+    local add_score_alpha = 0
+    if progress < 20 then
+        add_score_alpha = (1 - math.pow(1 - (progress / 20), anim_speed))
+    else
+        add_score_alpha = 1
+    end
+
+
+    if CURRENT_SKOBJ_DATA.add_score > 0 and progress < 30 then
+        local display_add_score = "+" .. tostring(CURRENT_SKOBJ_DATA.add_score)
+
+        for i = 1, #display_add_score do
+            local digit = string.sub(display_add_score, i, i)
+            obj.load("image", ASSET_PATH .. "score/v3/digit/s" .. digit .. ".png")
+            obj.draw(ofs_x + max_digit_ofs + 6.89 + (i - 1) * 22, 51.3, 0, 0.65, add_score_alpha)
+        end
+
+        for i = 1, #display_add_score do
+            local digit = string.sub(display_add_score, i, i)
+            obj.load("image", ASSET_PATH .. "score/v3/digit/" .. digit .. ".png")
+            obj.draw(ofs_x + max_digit_ofs + 6.89 + (i - 1) * 22, 51.3, 0, 0.65, add_score_alpha)
+        end
+    end
+
+    obj.copybuffer("obj", "tmp")
+end
+
+-----------------------------------------------------------------
+
+@Life
+--track0:Life,0,9999,1000,1
+
+local life = obj.track0
+if LOAD_STATUS == "ok" and SKOBJ_JSON then
+    obj.setoption("drawtarget", "tempbuffer", 500, 150)
+
+    obj.load("image", ASSET_PATH .. "life/v3/bg.png")
+    obj.draw(0, 0, 0, 0.173)
+    if life <= 200 then
+        obj.load("image", ASSET_PATH .. "life/v3/bar/red.png")
+    else
+        obj.load("image", ASSET_PATH .. "life/v3/bar/green.png")
+    end
+    obj.effect("マスク", "X", life * 1.531, "サイズ", 1800, "マスクの種類", "四角形", "マスクの反転", 1)
+    obj.draw(0, 0, 0, 0.173)
+
+    for i = #tostring(life), 1, -1 do
+        obj.load("image", ASSET_PATH .. "life/v3/digit/s" .. string.sub(tostring(life), i, i) .. ".png")
+        obj.draw(118 - (#tostring(life) - i + 1) * 22, -25, 0, 0.025)
+    end
+    for i = #tostring(life), 1, -1 do
+        obj.load("image", ASSET_PATH .. "life/v3/digit/" .. string.sub(tostring(life), i, i) .. ".png")
+        obj.draw(118 - (#tostring(life) - i + 1) * 22, -25, 0, 0.025)
+    end
+
+    obj.copybuffer("obj", "tmp")
+end
+
+-----------------------------------------------------------------
+
+@Judgement
+--track0:Judge,1,6,1,1
+
+local judgement = obj.track0
+local judge_list = {"perfect", "great", "good", "bad", "miss", "auto"}
+if LOAD_STATUS == "ok" and SKOBJ_JSON then
+    if CURRENT_SKOBJ_DATA.seconds > 0 then
+        local progress = (obj.frame - OFFSET) - (CURRENT_SKOBJ_DATA.seconds * obj.framerate)
+        if progress < 2 then
+            obj.load("image", ASSET_PATH .. "judge/v3/" .. judge_list[judgement] .. ".png")
+            obj.draw(0, 0, 0, 0)
+        elseif progress < 3 then
+            obj.load("image", ASSET_PATH .. "judge/v3/" .. judge_list[judgement] .. ".png")
+            obj.draw(0, 0, 0, 0.7)
+        elseif progress < 4 then
+            obj.load("image", ASSET_PATH .. "judge/v3/" .. judge_list[judgement] .. ".png")
+            obj.draw(0, 0, 0, 0.95)
+        elseif progress < 20 then
+            obj.load("image", ASSET_PATH .. "judge/v3/" .. judge_list[judgement] .. ".png")
+            obj.draw(0, 0, 0, 1)
+        end
+    end
+end
