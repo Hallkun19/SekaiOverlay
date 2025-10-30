@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+__pycache__/
+dist/
+archive/
+*.aup2

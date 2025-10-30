@@ -1,0 +1,6 @@
+Pillow
+rich
+requests
+opencv-python
+mutagen
+tkinterdnd2
