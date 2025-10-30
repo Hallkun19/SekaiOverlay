@@ -4,3 +4,5 @@ __pycache__/
 dist/
 archive/
 *.aup2
+build/
+*.spec

@@ -4,6 +4,8 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 from PIL import Image
+from src.utils import resource_path
+
 
 
 def _morph(image_pil: Image.Image, target_coords: List[Tuple[int, int]], target_size: Tuple[int, int]) -> Image.Image:
@@ -64,16 +66,16 @@ def _mask(image_pil: Image.Image, mask_pil: Image.Image) -> Image.Image:
     return result_pil
 
 
-def _render_v3(target_image: Image.Image, assets_dir: str) -> Image.Image:
+def _render_v3(target_image: Image.Image) -> Image.Image:
     """v3の背景画像を生成します。"""
     # アセット画像の読み込み
-    base = Image.open(os.path.join(assets_dir, "base.png")).convert("RGBA")
-    bottom = Image.open(os.path.join(assets_dir, "bottom.png")).convert("RGBA")
-    center_cover = Image.open(os.path.join(assets_dir, "center_cover.png")).convert("RGBA")
-    center_mask = Image.open(os.path.join(assets_dir, "center_mask.png")).convert("RGBA")
-    side_cover = Image.open(os.path.join(assets_dir, "side_cover.png")).convert("RGBA")
-    side_mask = Image.open(os.path.join(assets_dir, "side_mask.png")).convert("RGBA")
-    windows = Image.open(os.path.join(assets_dir, "windows.png")).convert("RGBA")
+    base = Image.open(resource_path(os.path.join("assets", "background", "v3", "base.png"))).convert("RGBA")
+    bottom = Image.open(resource_path(os.path.join("assets", "background", "v3", "bottom.png"))).convert("RGBA")
+    center_cover = Image.open(resource_path(os.path.join("assets", "background", "v3", "center_cover.png"))).convert("RGBA")
+    center_mask = Image.open(resource_path(os.path.join("assets", "background", "v3", "center_mask.png"))).convert("RGBA")
+    side_cover = Image.open(resource_path(os.path.join("assets", "background", "v3", "side_cover.png"))).convert("RGBA")
+    side_mask = Image.open(resource_path(os.path.join("assets", "background", "v3", "side_mask.png"))).convert("RGBA")
+    windows = Image.open(resource_path(os.path.join("assets", "background", "v3", "windows.png"))).convert("RGBA")
 
     base_size = base.size
     
@@ -113,14 +115,14 @@ def _render_v3(target_image: Image.Image, assets_dir: str) -> Image.Image:
 
     return final_image
 
-def _render_v1(target_image: Image.Image, assets_dir: str) -> Image.Image:
+def _render_v1(target_image: Image.Image) -> Image.Image:
     """v1の背景画像を生成します。"""
     # アセット画像の読み込み
-    base = Image.open(os.path.join(assets_dir, "base.png")).convert("RGBA")
-    side_mask = Image.open(os.path.join(assets_dir, "side_mask.png")).convert("RGBA")
-    center_mask = Image.open(os.path.join(assets_dir, "center_mask.png")).convert("RGBA")
-    mirror_mask = Image.open(os.path.join(assets_dir, "mirror_mask.png")).convert("RGBA")
-    frames = Image.open(os.path.join(assets_dir, "frames.png")).convert("RGBA")
+    base = Image.open(resource_path(os.path.join("assets", "background", "v1", "base.png"))).convert("RGBA")
+    side_mask = Image.open(resource_path(os.path.join("assets", "background", "v1", "side_mask.png"))).convert("RGBA")
+    center_mask = Image.open(resource_path(os.path.join("assets", "background", "v1", "center_mask.png"))).convert("RGBA")
+    mirror_mask = Image.open(resource_path(os.path.join("assets", "background", "v1", "mirror_mask.png"))).convert("RGBA")
+    frames = Image.open(resource_path(os.path.join("assets", "background", "v1", "frames.png"))).convert("RGBA")
     
     base_size = base.size
 
@@ -163,7 +165,6 @@ def generate_background_image(level_id: str, version: str) -> None:
 
     # パス設定
     dist_dir = os.path.join("dist", level_id)
-    assets_dir = os.path.join("assets", "background", f"v{version}")
     cover_image_path = os.path.join(dist_dir, "jacket.jpg")
     output_image_path = os.path.join(dist_dir, "background.png")
 
@@ -173,9 +174,9 @@ def generate_background_image(level_id: str, version: str) -> None:
         
         # バージョンに応じてレンダリング関数を呼び出し
         if version == "3":
-            final_image = _render_v3(target_image, assets_dir)
+            final_image = _render_v3(target_image)
         elif version == "1":
-            final_image = _render_v1(target_image, assets_dir)
+            final_image = _render_v1(target_image)
         else:
             raise ValueError(f"バージョン '{version}' は現在サポートされていません。")
 

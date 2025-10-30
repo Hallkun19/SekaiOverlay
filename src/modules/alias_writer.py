@@ -2,18 +2,20 @@
 
 import os
 import json
+from src.utils import resource_path
 
-def generate_alias_object(level_id: str, base_dir: str, last_note_time: float, extra_data: dict) -> str:
-    """
-    template.object を読み込み、プレースホルダーを置換して main.object を出力する。
-    """
+
+def generate_alias_object(level_id: str, last_note_time: float, extra_data: dict) -> str: # ★ base_dir引数を削除
     print("エイリアスオブジェクトの生成を開始します...")
-
+    
+    # ★ プロジェクトルートを基準にパスを再構築
+    project_root = resource_path('.')
+    dist_dir = os.path.join(project_root, 'dist', level_id)
+    assets_dir = os.path.join(project_root, 'assets')
+    
     try:
-        # 1. パス構築
-        dist_dir = os.path.join(base_dir, 'dist', level_id)
-        assets_dir = os.path.join(base_dir, 'assets')
-        template_path = os.path.join(assets_dir, 'alias', 'template.object')
+        # ★ template_pathをresource_pathで取得
+        template_path = resource_path(os.path.join('assets', 'alias', 'template.object'))
         level_json_path = os.path.join(dist_dir, 'level.json')
         output_path = os.path.join(dist_dir, 'main.object')
 
@@ -32,6 +34,8 @@ def generate_alias_object(level_id: str, base_dir: str, last_note_time: float, e
         difficulty_input = extra_data.get('difficulty', 'custom')
         standard_difficulties = ["easy", "normal", "hard", "expert", "master", "append"]
         difficulty_img_val = difficulty_input.lower() if difficulty_input.lower() in standard_difficulties else 'custom'
+        vocal_input = extra_data.get('vocal')
+        vocal_text = f"Vo. {vocal_input}" if vocal_input else "Inst. ver."
 
         replacements = {
             '{title}': final_title,
@@ -39,7 +43,7 @@ def generate_alias_object(level_id: str, base_dir: str, last_note_time: float, e
             '{words}': extra_data.get('words', '-'),
             '{music}': extra_data.get('music', '-'),
             '{arrange}': extra_data.get('arrange', '-'),
-            '{vocal}': extra_data.get('vocal') or 'Inst. ver.',
+            '{vocal}': vocal_text,
             '{difficulty}': difficulty_input.upper(),
             '{difficulty_img}': difficulty_img_val
         }

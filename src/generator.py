@@ -1,7 +1,7 @@
 import os
 from typing import Callable
-
 from src.modules import downloader, image_processor, score_calculator, alias_writer
+from src import config
 
 class Generator:
     def __init__(self, config: dict, status_callback: Callable[[str], None]):
@@ -28,12 +28,12 @@ class Generator:
             self.update_status("スコアオブジェクトを生成中...")
             assets_path = os.path.join(self.script_dir, "assets")
             last_note_time = score_calculator.generate_skobj_data(
-                full_level_id, assets_path, self.config['team_power'], self.config['app_version']
+                full_level_id, assets_path, self.config['team_power'], config.APP_VERSION
             )
 
             self.update_status("エイリアスオブジェクトを生成中...")
             alias_writer.generate_alias_object(
-                full_level_id, self.script_dir, last_note_time, self.config['extra_data']
+                full_level_id, last_note_time, self.config['extra_data']
             )
 
             self._cleanup(full_level_id)

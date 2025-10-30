@@ -11,7 +11,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(f"Sekai Overlay Generator v{config.APP_VERSION}")
-        setup_handler.run_initial_setup()
+        setup_handler.check_and_run_setup()
         self.geometry("500x680")
         self.resizable(False, False)
         self._setup_styles()
