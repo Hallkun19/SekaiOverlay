@@ -1,18 +1,22 @@
-# src/gui.py
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
+import requests
+from src import config
+import webbrowser
 from src.generator import Generator
+from src.modules import setup_handler
 
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Sekai Overlay Generator v3.0")
+        self.title(f"Sekai Overlay Generator v{config.APP_VERSION}")
+        setup_handler.run_initial_setup()
         self.geometry("500x680")
         self.resizable(False, False)
         self._setup_styles()
         self._create_widgets()
+        threading.Thread(target=self._check_for_updates, daemon=True).start()
 
     def _setup_styles(self):
         try:
@@ -92,16 +96,36 @@ class Application(tk.Tk):
     def _start_generation(self):
         self.run_button.config(state="disabled")
         
-        config = {
+        config_data = {
             "full_level_id": self.full_level_id_var.get().strip(),
             "bg_version": self.bg_version_var.get(),
             "team_power": float(self.team_power_var.get()),
+            "app_version": config.APP_VERSION,
             "extra_data": {key: var.get() for key, var in self.meta_vars.items()}
         }
-        config["extra_data"]["difficulty"] = self.difficulty_var.get()
+        config_data["extra_data"]["difficulty"] = self.difficulty_var.get()
         
-        thread = threading.Thread(target=self._run_generator, args=(config,), daemon=True)
+        thread = threading.Thread(target=self._run_generator, args=(config_data,), daemon=True)
         thread.start()
+
+    def _check_for_updates(self):
+        """起動時に新しいバージョンがないか確認する"""
+        try:
+            response = requests.get(config.UPDATE_CHECK_URL, timeout=10)
+            response.raise_for_status()
+            remote_data = response.json()
+            remote_version = remote_data.get("version")
+
+            if remote_version and remote_version > config.APP_VERSION:
+                msg = (
+                    f"新しいバージョン ({remote_version}) が利用可能です。\n"
+                    f"現在のバージョン: {config.APP_VERSION}\n\n"
+                    "ダウンロードページを開きますか？"
+                )
+                if messagebox.askyesno("アップデート通知", msg):
+                    webbrowser.open(config.RELEASE_PAGE_URL)
+        except Exception as e:
+            print(f"アップデートチェックに失敗しました: {e}")
 
     def _run_generator(self, config):
         generator = Generator(config, lambda msg: self.status_var.set(msg))

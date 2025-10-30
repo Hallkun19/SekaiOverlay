@@ -28,7 +28,7 @@ class Generator:
             self.update_status("スコアオブジェクトを生成中...")
             assets_path = os.path.join(self.script_dir, "assets")
             last_note_time = score_calculator.generate_skobj_data(
-                full_level_id, assets_path, self.config['team_power']
+                full_level_id, assets_path, self.config['team_power'], self.config['app_version']
             )
 
             self.update_status("エイリアスオブジェクトを生成中...")

@@ -136,7 +136,7 @@ def _calculate_score_frames(level_info: Dict[str, Any], level_data: Dict[str, An
         
     return frames, last_note_time
 
-def generate_skobj_data(level_id: str, assets_base_path: str, team_power: float) -> float:
+def generate_skobj_data(level_id: str, assets_base_path: str, team_power: float, app_version: str) -> float:
     """
     譜面データを読み込み、スコアオブジェクトデータを計算してJSONファイルに出力する。
     """
@@ -160,7 +160,7 @@ def generate_skobj_data(level_id: str, assets_base_path: str, team_power: float)
 
     output_data = {
         "asset_path": assets_base_path + "\\",
-        "version": "v0.1.0",
+        "version": app_version,
         "objects": score_frames
     }
 

@@ -1,3 +1,17 @@
+import os
+
+APP_VERSION = "0.1.0"
+
+UPDATE_CHECK_URL = "https://raw.githubusercontent.com/Hallkun19/SekaiOverlay/refs/heads/main/data.json"
+RELEASE_PAGE_URL = "https://github.com/Hallkun19/SekaiOverlay/releases/latest"
+
+CONFIG_DIR = os.path.join(os.getenv('APPDATA'), 'SekaiOverlay')
+CONFIG_PATH = os.path.join(CONFIG_DIR, 'config.ini')
+
+AVIUTL_SCRIPT_DIR = "C:\\ProgramData\\aviutl2\\Script"
+
+UNMULT_ANM_URL = "https://gist.githubusercontent.com/mes51/f90331af552231f39adb5ed3847ebe86/raw/121c5a97d7d776270bdb81febdcf12e79b257466/unmult.anm2"
+
 SERVER_MAP = {
     "chcy": "https://cc.sevenc7c.com/sonolus/levels/",
     "ptlv": "https://ptlv.sevenc7c.com/sonolus/levels/",
