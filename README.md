@@ -1,3 +1,6 @@
+# Move Repository (change language to go)
+https://github.com/Hallkun19/sekai-overlay-go
+
 # SekaiOverlay
 某セカイ風の動画をAviUtl2で作るためのツール・スクリプトです。
 GUI上で特定のサーバーの譜面IDを入力すると、背景の生成から動画用UIの生成までをほとんど自動で行います。
