@@ -11,6 +11,7 @@ CONFIG_PATH = os.path.join(CONFIG_DIR, 'config.ini')
 AVIUTL_SCRIPT_DIR = "C:\\ProgramData\\aviutl2\\Script"
 
 UNMULT_ANM_URL = "https://gist.githubusercontent.com/mes51/f90331af552231f39adb5ed3847ebe86/raw/121c5a97d7d776270bdb81febdcf12e79b257466/unmult.anm2"
+DKJSON_LUA_URL = "https://raw.githubusercontent.com/LuaDist/dkjson/refs/heads/master/dkjson.lua"
 
 SERVER_MAP = {
     "chcy": "https://cc.sevenc7c.com/sonolus/levels/",

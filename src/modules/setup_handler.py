@@ -100,10 +100,17 @@ def _install_obj_script():
     print(f"'{dest_path}' へスクリプトをインストールしました。")
 
 def _install_anm_script():
-    """unmult.anm2 をダウンロードしてインストールする"""
+    """unmult.anm2, dkjson.luaをダウンロードしてインストールする"""
     dest_path = os.path.join(config.AVIUTL_SCRIPT_DIR, "unmult.anm2")
     response = requests.get(config.UNMULT_ANM_URL, timeout=15)
     response.raise_for_status()
     with open(dest_path, 'wb') as f:
         f.write(response.content)
+    
+    dest_path = os.path.join(config.AVIUTL_SCRIPT_DIR, "dkjson.lua")
+    response = requests.get(config.DKJSON_LUA_URL, timeout=15)
+    response.raise_for_status()
+    with open(dest_path, 'wb') as f:
+        f.write(response.content)
+    
     print(f"'{dest_path}' へスクリプトをダウンロード・インストールしました。")
