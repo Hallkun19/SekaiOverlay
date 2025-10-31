@@ -40,11 +40,15 @@ GUI上で特定のサーバーの譜面IDを入力すると、背景の生成か
 #### ignore cache
 skobj dataの読み込みのキャッシュを無視するかを選択できます
 
+---
+
 ### Combo@SekaiObjects
 #### AP
 AP演出を1でON、0でオフにすることができます
 #### X Area Expand
 この値を増やすことにより、桁数が多いときなどに途切れたような見た目になることを防げます
+
+---
 
 ### Score@SekaiObjects
 #### Max Digit
@@ -54,9 +58,13 @@ AP演出を1でON、0でオフにすることができます
 #### X Area Expand
 この値を増やすことにより、桁数が多いときなどに途切れたような見た目になることを防げます
 
+---
+
 ### Life@SekaiObjects
 #### Life
 表示するライフの値を変更できます
+
+---
 
 ### Judgement@SekaiObjects
 #### Judge
