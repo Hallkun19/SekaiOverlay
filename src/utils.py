@@ -1,5 +1,6 @@
 import sys
 import os
+import ctypes
 
 def get_app_root() -> str:
     """
@@ -22,3 +23,32 @@ def resource_path(relative_path: str) -> str:
             base_path = internal_path
     
     return os.path.join(base_path, relative_path)
+
+def is_admin() -> bool:
+    """
+    現在のプロセスが管理者権限で実行されているかを確認します (Windows専用)。
+    """
+    if sys.platform == "win32":
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+    return False
+
+def run_as_admin():
+    """
+    アプリケーションを管理者権限で再起動します (Windows専用)。
+    UACプロンプトが表示されます。
+    """
+    if sys.platform == "win32":
+        try:
+            ctypes.windll.shell32.ShellExecuteW(
+                None,
+                "runas",
+                sys.executable,
+                " ".join(sys.argv),
+                None,
+                1
+            )
+        except Exception as e:
+            print(f"管理者権限での再起動に失敗しました: {e}")
