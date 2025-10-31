@@ -16,36 +16,42 @@ def check_and_run_setup():
     stored_version = parser.get('AppInfo', 'LastVersion', fallback=None)
     setup_complete = parser.getboolean('AppInfo', 'SetupComplete', fallback=False)
 
-    # 1. セットアップや更新が必要なタスクをリストアップ
     tasks = []
-    if stored_version != config.APP_VERSION:
-        tasks.append("update")
+    if stored_version != config.APP_VERSION or not setup_complete:
+        tasks.append("update_obj")
     if not setup_complete:
-        tasks.append("initial")
+        tasks.append("install_anm")
     
-    # 2. 実行すべきタスクがなければ、ここで処理を終了
     if not tasks:
         return
 
-    # 3. 管理者権限があるか確認
     if is_admin():
-        # --- [権限あり] インストール処理を直接実行 ---
+        success_messages = []
         try:
-            if "update" in tasks:
+            if "update_obj" in tasks:
                 _install_obj_script()
                 _update_config_file('LastVersion', config.APP_VERSION)
-                messagebox.showinfo("スクリプト更新完了", "'@SekaiObjects.obj2' が正常に更新されました。")
+                success_messages.append("・'@SekaiObjects.obj2' をインストール/更新しました。")
             
-            if "initial" in tasks:
+            if "install_anm" in tasks:
                 _install_anm_script()
                 _update_config_file('SetupComplete', 'true')
-                messagebox.showinfo("初回セットアップ完了", "'unmult.anm2', 'dkjson.lua' が正常にインストールされました。")
+                success_messages.append("・'unmult.anm2', 'dkjson.lua' をインストールしました。")
+            
+            if success_messages:
+                title = "セットアップ完了"
+                if "install_anm" in tasks:
+                    header = "初回セットアップが完了しました。\n以下のスクリプトがAviUtlのScriptフォルダにインストールされました。\n"
+                else:
+                    header = "スクリプトの更新が完了しました。\n"
+                
+                full_message = header + "\n" + "\n".join(success_messages)
+                messagebox.showinfo(title, full_message)
         
         except Exception as e:
             messagebox.showerror("セットアップ失敗", f"スクリプトのインストール中にエラーが発生しました:\n{e}")
 
     else:
-        # --- [権限なし] ユーザーに管理者権限での再起動を促す ---
         msg = (
             "AviUtl用スクリプトのセットアップ（初回または更新）が必要です。\n\n"
             "この処理には管理者権限が必要です。\n"
@@ -53,7 +59,7 @@ def check_and_run_setup():
         )
         if messagebox.askyesno("管理者権限が必要です", msg):
             run_as_admin()
-            sys.exit(0) # 現在の通常権限のプロセスを終了させる
+            sys.exit(0)
         else:
             messagebox.showwarning("セットアップのスキップ", "スクリプトのセットアップがスキップされました。\nAviUtl連携機能が正しく動作しない可能性があります。")
 
@@ -73,7 +79,6 @@ def _update_config_file(key: str, value: str):
         parser.write(f)
 
 
-# ( _check_write_permission, _install_obj_script, _install_anm_script は前の回答から変更なし )
 def _check_write_permission(path: str) -> bool:
     """指定されたパスへの書き込み権限があるかチェックする"""
     try:
