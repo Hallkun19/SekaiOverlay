@@ -2,7 +2,7 @@
 .vscode/
 __pycache__/
 dist/
-archive/
+.archive/
 *.aup2
 build/
 *.spec
