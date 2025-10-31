@@ -1,4 +1,5 @@
-# Move Repository (change language to go)
+# Move Repository
+Changed the development language to Go
 https://github.com/Hallkun19/sekai-overlay-go
 
 # SekaiOverlay
