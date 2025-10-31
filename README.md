@@ -6,6 +6,8 @@ GUI上で特定のサーバーの譜面IDを入力すると、背景の生成か
 ## 注意
 これはまだ開発途上のツールです。
 不具合等がありましたらこのリポジトリのIssuesか、Discordにてお願いします。
+**ChartCyanvas**や**UntitledCharts**、**NextSEKAI**のDiscordサーバーでこのツールへの質問を**絶対にしないで**ください。
+これは個人が開発したちっぽけなツールです。彼らとは関係がありません。
 
 > [!CAUTION]
 > Notice for English Users
