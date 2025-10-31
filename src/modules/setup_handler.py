@@ -36,7 +36,7 @@ def check_and_run_setup():
     if not setup_complete:
         msg_anm = (
             "これは初回起動、または関連ファイルのセットアップが未完了です。\n\n"
-            "AviUtlの動作に必要なスクリプト 'unmult.anm2' をダウンロードし、インストールします。\n"
+            "AviUtlの動作に必要なスクリプト 'unmult.anm2', 'dkjson.lua' をダウンロードし、インストールします。\n"
             "よろしいですか？"
         )
         if messagebox.askyesno("初回セットアップ", msg_anm):
@@ -46,7 +46,7 @@ def check_and_run_setup():
 
                 _install_anm_script()
                 _update_config_file('SetupComplete', 'true')
-                messagebox.showinfo("成功", "'unmult.anm2' が正常にインストールされました。")
+                messagebox.showinfo("成功", "'unmult.anm2', 'dkjson.lua' が正常にインストールされました。")
 
             except Exception as e:
                 messagebox.showerror("セットアップ失敗", f"スクリプトのインストール中にエラーが発生しました:\n{e}")
